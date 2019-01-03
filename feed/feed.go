@@ -42,18 +42,31 @@ func (f *Feed) Parse(lpd *time.Time) (items Items, mostRecent string, err error)
 
 	for _, item := range feed.Items {
 		var entry Item
-		if item.PublishedParsed.Before(*lpd) || item.PublishedParsed.Equal(*lpd) {
+		var pub *time.Time
+
+		if item.Published != "" {
+			pub = item.PublishedParsed
+		} else if item.Updated != "" {
+			pub = item.UpdatedParsed
+		} else {
 			break
 		}
 
-		if item.PublishedParsed.After(*latest) {
-			latest = item.PublishedParsed
+		// if item.PublishedParsed.Before(*lpd) || item.PublishedParsed.Equal(*lpd) || item.UpdatedParsed.Before(*lpd) || item.UpdatedParsed.Equal(*lpd) {
+		// 	break
+		// }
+
+		if pub.Before(*lpd) || pub.Equal(*lpd) {
+			break
+		}
+
+		if pub.After(*latest) {
+			latest = pub
 		}
 
 		entry.Title = item.Title
 		entry.Link = item.Link
 		items.Items = append(items.Items, entry)
 	}
-
 	return items, latest.String(), nil
 }
