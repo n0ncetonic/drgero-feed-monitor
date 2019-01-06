@@ -49,7 +49,7 @@ func (f *Feed) Parse(lpd *time.Time) (items Items, mostRecent string, err error)
 		} else if item.Updated != "" {
 			pub = item.UpdatedParsed
 		} else {
-			break
+			continue
 		}
 
 		// if item.PublishedParsed.Before(*lpd) || item.PublishedParsed.Equal(*lpd) || item.UpdatedParsed.Before(*lpd) || item.UpdatedParsed.Equal(*lpd) {
@@ -57,7 +57,7 @@ func (f *Feed) Parse(lpd *time.Time) (items Items, mostRecent string, err error)
 		// }
 
 		if pub.Before(*lpd) || pub.Equal(*lpd) {
-			break
+			continue
 		}
 
 		if pub.After(*latest) {
